@@ -64,6 +64,7 @@ from code_saturne.model.AtmosphericFlowsModel import AtmosphericFlowsModel
 from code_saturne.model.GroundwaterModel import GroundwaterModel
 from code_saturne.model.MainFieldsModel import MainFieldsModel
 from code_saturne.model.HgnModel import HgnModel
+from code_saturne.model.UserSolverModel import UserSolverModel
 
 from code_saturne.model.LagrangianModel import LagrangianModel
 from code_saturne.model.TurboMachineryModel import TurboMachineryModel
@@ -112,16 +113,18 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
         # Set models and number of elements for combo boxes
 
         self.modelSinglePhase    = QtPage.ComboModel(self.comboBoxSinglePhase,3,1)
-        self.modelHgn            = QtPage.ComboModel(self.comboBoxHgn,2,1)
         self.modelAtmospheric    = QtPage.ComboModel(self.comboBoxAtmospheric,3,1)
+        self.modelJouleEffect    = QtPage.ComboModel(self.comboBoxJouleEffect,2,1)
+        self.modelGroundwater    = QtPage.ComboModel(self.comboBoxGroundwater,1,1)
         self.modelReactiveFlows  = QtPage.ComboModel(self.comboBoxReactiveFlows,2,1)
         self.modelGasCombustion  = QtPage.ComboModel(self.comboBoxGasCombustion,3,1)
         self.modelCoalCombustion = QtPage.ComboModel(self.comboBoxCoalCombustion,2,1)
-        self.modelJouleEffect    = QtPage.ComboModel(self.comboBoxJouleEffect,2,1)
-        self.modelGroundwater    = QtPage.ComboModel(self.comboBoxGroundwater,1,1)
+        self.modelHgn            = QtPage.ComboModel(self.comboBoxHgn,2,1)
+        self.modelUserSolver     = QtPage.ComboModel(self.comboBoxUserSolver,2,1)
 
         self.modelNeptuneCFD     = QtPage.ComboModel(self.comboBoxNeptuneCFD,2,1)
 
+        # SinglePhase 
         self.modelSinglePhase.addItem(self.tr("Incompressible"), 'off')
         self.modelSinglePhase.addItem(self.tr("Compressible, perfect gas with constant gamma"),
                                       'constant_gamma')
@@ -129,15 +132,18 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
                                       'variable_gamma')
         self.modelSinglePhase.disableItem(str_model='variable_gamma')
 
+        # Atmospheric
         self.modelAtmospheric.addItem(self.tr("constant density"), "constant")
         self.modelAtmospheric.addItem(self.tr("dry atmosphere"  ), "dry")
         self.modelAtmospheric.addItem(self.tr("humid atmosphere"), "humid")
 
+        # ReactiveFlows
         self.modelReactiveFlows.addItem(self.tr("Gas combustion"),
                                         "gas_combustion")
         self.modelReactiveFlows.addItem(self.tr("Pulverized Coal"),
                                         "pulverized_coal")
 
+        # GasCombustion
         self.modelGasCombustion.addItem(self.tr("perfect premixed flame (Eddy Break-Up)"),
                                         "ebu")
         self.modelGasCombustion.addItem(self.tr("infinitely fast chemistry diffusion flame"),
@@ -145,21 +151,32 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
         self.modelGasCombustion.addItem(self.tr("partial premixed flame (Libby_Williams)"),
                                         "lwp")
 
+        # CoalCombustion
         self.modelCoalCombustion.addItem(self.tr("homogeneous approach"),
                                          "homogeneous_fuel")
         self.modelCoalCombustion.addItem(self.tr("homogeneous approach with moisture"),
                                          "homogeneous_fuel_moisture")
 
+        # JouleEffect
         self.modelJouleEffect.addItem(self.tr("Joule Effect"), "joule")
         self.modelJouleEffect.addItem(self.tr("Joule Effect and Laplace Forces"), "arc")
 
+        # Groundwater
         self.modelGroundwater.addItem(self.tr("Groundwater flows"), 'groundwater')
 
+        # Hgn
         self.modelHgn.addItem(self.tr("No mass transfer"),
                               'no_mass_transfer')
         self.modelHgn.addItem(self.tr("Vaporization / Condensation Merkle model"),
                               'merkle_model')
 
+        # UserSolver
+        self.modelUserSolver.addItem(self.tr("Diffusion of a scalar"),
+                                     "scalar_diffusion")
+        self.modelUserSolver.addItem(self.tr("Convection of a scalar"),
+                                     "scalar_convection")
+
+        # NeptuneCFD
         self.modelNeptuneCFD.addItem(self.tr("User-defined"), "None")
         self.modelNeptuneCFD.addItem(self.tr("Thermal free surface flow"), "free_surface")
         self.modelNeptuneCFD.addItem(self.tr("Boiling flow"), "boiling_flow")
@@ -195,6 +212,7 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
         self.comboBoxSinglePhase.activated[str].connect(self.slotSinglePhase)
         self.comboBoxGroundwater.activated[str].connect(self.slotGroundwater)
         self.comboBoxHgn.activated[str].connect(self.slotHgn)
+        self.comboBoxUserSolver.activated[str].connect(self.slotUserSolver)
         self.comboBoxNeptuneCFD.activated[str].connect(self.slotNeptuneCFD)
         self.checkBoxALE.stateChanged.connect(self.slotALE)
         self.checkBoxFans.stateChanged.connect(self.slotFans)
@@ -204,7 +222,7 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
 
         for ind in ['SinglePhase', 'Atmospheric',
                     'JouleEffect', 'Groundwater', 'ReactiveFlows',
-                    'Hgn', 'NeptuneCFD']:
+                    'Hgn', 'NeptuneCFD', 'UserSolver']:
             eval('self.radioButton'+ind+'.toggled.connect(self.slotRadioButton)')
 
         # Initializations based on code
@@ -254,7 +272,7 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
 
         for ind in ['SinglePhase', 'Atmospheric',
                     'JouleEffect', 'Groundwater', 'ReactiveFlows',
-                    'Hgn', 'NeptuneCFD']:
+                    'Hgn', 'NeptuneCFD', 'UserSolver']:
             eval('self.radioButton'+ind+'.setChecked(False)')
 
 
@@ -271,6 +289,7 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
         self.comboBoxJouleEffect.hide()
         self.comboBoxGroundwater.hide()
         self.comboBoxHgn.hide()
+        self.comboBoxUserSolver.hide()
         self.comboBoxNeptuneCFD.hide()
 
 
@@ -288,6 +307,7 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
                         'JouleEffect',
                         'Groundwater',
                         'Hgn',
+                        'UserSolver',
                         'NeptuneCFD',
                         'Lagrangian',
                         'TurboMachinery']:
@@ -334,7 +354,8 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
         self.atmo  = AtmosphericFlowsModel(self.case)
         self.comp  = CompressibleModel(self.case)
         self.darc  = GroundwaterModel(self.case)
-        self.hgn  = HgnModel(self.case)
+        self.hgn   = HgnModel(self.case)
+        self.usol  = UserSolverModel(self.case)
 
         from code_saturne.model.TimeStepModel import TimeStepModel
 
@@ -345,6 +366,7 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
         gas = self.gas.getGasCombustionModel()
         compressible = self.comp.getCompressibleModel()
         homogeneous = self.hgn.getHgnModel()
+        usolver = self.usol.getUserSolverModel()
 
         # Compatibility between turbulence model and reactive flow models
         if self.turb.getTurbulenceModel() not in self.turb.RANSmodels():
@@ -390,6 +412,9 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
         elif homogeneous != 'off':
             self.modelHgn.setItem(str_model=homogeneous)
 
+        elif usolver != "off":
+            self.modelUserSolver.setItem(str_model=usolver)
+
         else:
             self.modelSinglePhase.setItem(str_model=compressible)
 
@@ -402,6 +427,7 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
         ReactiveFlows = self.gas.getGasCombustionModel()  != 'off' \
                         or self.pcoal.getCoalCombustionModel() != 'off'
         Hgn = homogeneous != 'off'
+        UserSolver  = self.usol.getUserSolverModel() != "off"
 
         self.checkPrev = 'SinglePhase'
         combo = None
@@ -410,7 +436,8 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
                     'JouleEffect',
                     'Groundwater',
                     'ReactiveFlows',
-                    'Hgn']:
+                    'Hgn',
+                    'UserSolver']:
 
             radioButton = eval('self.radioButton'+ind)
             model_on = eval(ind)
@@ -557,7 +584,9 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
                     'JouleEffect',
                     'Groundwater',
                     'ReactiveFlows',
-                    'NeptuneCFD']:
+                    'NeptuneCFD',
+                    'UserSolver',
+                    ]:
 
             radioButton = eval('self.radioButton'+ind)
             combo = eval('self.comboBox'+ind)
@@ -634,6 +663,8 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
                 self.comboBoxTurboMachinery.show()
                 self.checkBoxALE.show()
                 self.checkBoxFans.show()
+            if self.checkPrev == 'UserSolver':
+                self.usol.setUserSolverModel('off')
             if self.checkPrev == 'ReactiveFlows':
                 self.gas.setGasCombustionModel('off')
                 self.pcoal.setCoalCombustionModel('off')
@@ -806,6 +837,19 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
         self.hgn.setHgnModel(model)
 
         self.browser.configureTree(self.case)
+
+
+    @pyqtSlot(str)
+    def slotUserSolver(self, text):
+        """
+        Called when the comboBoxUserSolver changes
+        """
+
+        model = self.__stringModelFromCombo('UserSolver')
+        self.usol.setUserSolverModel(model)
+
+        self.browser.configureTree(self.case)
+
 
     @pyqtSlot(str)
     def slotTurboModel(self, text):

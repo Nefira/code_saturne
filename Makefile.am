@@ -310,6 +310,7 @@ bin/model/GlobalNumericalParametersModel.py \
 bin/model/GroundwaterLawModel.py \
 bin/model/GroundwaterModel.py \
 bin/model/HgnModel.py \
+bin/model/UserSolverModel.py \
 bin/model/HeadLossesModel.py \
 bin/model/IdentityAndPathesModel.py \
 bin/model/ImmersedBoundariesModel.py \
