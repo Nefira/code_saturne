@@ -482,6 +482,9 @@ Calculation features
     Species transport
     Turbomachinery
     Groundwater flows
+    Define custom solver 
+    Define solver variables
+    Define solver properties
     Fans
     Non condensable gases
     Thermodynamics
@@ -843,6 +846,12 @@ Performance settings
         m_atmo = False
         m_comp = False
         m_gwf = False
+        m_usol_cs = False
+        m_usol_pd = False
+
+        m_turb = True
+        m_body = True
+        m_species = True
 
         node_pm = case.xmlGetNode('thermophysical_models')
 
@@ -899,9 +908,21 @@ Performance settings
                 m_gwf = True
                 m_thermal = -1
                 m_fans = False
+                m_body = False
 
             if m_thermal > 0:
                 m_cht = True
+
+            node = node_pm.xmlGetNode('usolver_model',  'model')
+            if node and node['model'] != 'off': 
+                m_turb    = False
+                m_thermal = -1
+                m_body    = False
+                m_species = False
+                if node['model'] == "custom_solver":
+                    m_usol_cs = True
+                if node['model'] == "predef_solver":
+                    m_usol_pd = True
 
         node = case.xmlGetNode('lagrangian', 'model')
         if node and node['model'] != "off":
@@ -973,18 +994,21 @@ Performance settings
         self.setRowShow(self.tr('Calculation features'), True)
         self.setRowShow(self.tr('Main fields'), (p_module == 'neptune_cfd'))
         self.setRowShow(self.tr('Deformable mesh'), m_ale)
-        self.setRowShow(self.tr('Turbulence models'))
+        self.setRowShow(self.tr('Turbulence models'), m_turb)
         self.setRowShow(self.tr('Thermal model'), (m_thermal > -1))
-        self.setRowShow(self.tr('Body forces'), (not m_gwf))
+        self.setRowShow(self.tr('Body forces'), m_body) 
         self.setRowShow(self.tr('Gas combustion'), m_gas_comb)
         self.setRowShow(self.tr('Pulverized fuel combustion'), m_sf_comb)
         self.setRowShow(self.tr('Electrical models'), m_elec)
         self.setRowShow(self.tr('Conjugate heat transfer'), m_cht)
         self.setRowShow(self.tr('Atmospheric flows'), m_atmo)
-        self.setRowShow(self.tr('Species transport'))
+        self.setRowShow(self.tr('Species transport'), m_species)
         self.setRowShow(self.tr('Turbomachinery'), m_tbm)
         self.setRowShow(self.tr('Groundwater flows'), m_gwf)
         self.setRowShow(self.tr('Fans'), m_fans)
+        self.setRowShow(self.tr('Define custom solver'), m_usol_cs)
+        self.setRowShow(self.tr('Define solver variables'), m_usol_pd)
+        self.setRowShow(self.tr('Define solver properties'), m_usol_pd)
 
         self.setRowShow(self.tr('Non condensable gases'), m_ncfd['non_condens'])
         self.setRowShow(self.tr('Thermodynamics'), is_ncfd)

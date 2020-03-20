@@ -119,6 +119,9 @@ WelcomeView.py \
 XMLEditorView.py \
 SpeciesView.py \
 UsersControlView.py \
+UserSolverCustomView.py \
+UserSolverPredefPropView.py \
+UserSolverPredefVarView.py \
 OutputFieldsView.py \
 OpenTurnsDialogView.py \
 SolidView.py \
@@ -200,6 +203,9 @@ TurboMachineryForm.ui \
 TurbulenceAdvancedOptionsDialogForm.ui \
 TurbulenceForm.ui \
 TurbulenceNeptune.ui \
+UserSolverCustomForm.ui \
+UserSolverPredefPropForm.ui \
+UserSolverPredefVarForm.ui \
 VerifyExistenceLabelDialogForm.ui \
 VolumicZoneAdvancedDialogForm.ui \
 WelcomeForm.ui \

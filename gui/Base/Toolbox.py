@@ -47,6 +47,8 @@ def displaySelectedPage(page_name, root, case, stbar=None, tree=None):
     # 'page_name' is the name of the page
     #
 
+    #TODO replace long if...elif by a dictionary
+
     if page_name == tr("Calculation environment"):
         import code_saturne.Pages.IdentityAndPathesView as Page
         thisPage = Page.IdentityAndPathesView(root, case)
@@ -302,6 +304,18 @@ def displaySelectedPage(page_name, root, case, stbar=None, tree=None):
     elif page_name == tr("Interfacial area"):
         import code_saturne.Pages.InterfacialAreaView as Page
         thisPage = Page.InterfacialAreaView(root, case)
+
+    elif page_name == tr("Define custom solver"):
+        import code_saturne.Pages.UserSolverCustomView as Page
+        thisPage = Page.UserSolverCustomView()
+
+    elif page_name == tr("Define solver variables"):
+        import code_saturne.Pages.UserSolverPredefVarView as Page
+        thisPage = Page.UserSolverPredefVarView()
+
+    elif page_name == tr("Define solver properties"):
+        import code_saturne.Pages.UserSolverPredefPropView as Page
+        thisPage = Page.UserSolverPredefPropView()
 
     else:
         msg = tr("Warning: the corresponding Page %s doesn't exist!") % page_name

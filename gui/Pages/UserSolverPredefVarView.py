@@ -23,83 +23,42 @@
 #-------------------------------------------------------------------------------
 
 """
-This module defines the user solver model management
-
-This module contains the following classes and function:
-- UserSolverModel 
+This module defines the welcome page.
 """
 
 #-------------------------------------------------------------------------------
 # Library modules import
 #-------------------------------------------------------------------------------
 
-import unittest
-import sys
+from code_saturne.Base           import QtGui
+from code_saturne.Base.QtWidgets import *
 
 #-------------------------------------------------------------------------------
 # Application modules import
 #-------------------------------------------------------------------------------
 
-from code_saturne.model.Common import *
-from code_saturne.model.XMLvariables import Variables, Model
+try:
+    from code_saturne.Pages.UserSolverPredefVarForm import Ui_UserSolverPredefVarForm
+except Exception:
+    import os, sys
+    sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)))
+    from code_saturne.Pages.UserSolverPredefVarForm import Ui_UserSolverPredefVarForm
 
 #-------------------------------------------------------------------------------
-# User Solver model class
+# This class defines the welcome page
 #-------------------------------------------------------------------------------
 
-class UserSolverModel(Variables, Model):
+class UserSolverPredefVarView(QWidget, Ui_UserSolverPredefVarForm):
     """
-    Enable User solver model
+    Class for the welcome page
     """
-
-    def __init__(self, case):
+    def __init__(self):
         """
-        Initialize User solver
+        Constructor
         """
-        self.case = case
-        self.node_models  = self.case.xmlGetNode("thermophysical_models")
-        self.node_usolver = self.node_models.xmlInitNode('usolver_model')
-        self.usolver_choice = ["off", "custom_solver", "predef_solver"]
-
-
-    def __defaultValues(self):
-        """
-        Returns a dictionary with default values
-        """
-        default = {}
-        default['activation'] = 'off'
-        return default
-
-
-    @Variables.undoGlobal
-    def setUserSolverModel(self, model):
-        """
-        Enable or disable user solver model
-        """
-        self.isInList(model, self.usolver_choice) 
-        old_model = self.node_usolver['model']
-        self.node_usolver['model'] = model
-            
-
-
-    @Variables.noUndo
-    def getUserSolverModel(self):
-        """
-        Return model
-        """
-        node = self.node_models.xmlInitNode("usolver_model")
-        status = node["model"]
-        if status not in self.usolver_choice:
-            status = self.__defaultValues()["activation"]
-            self.setUserSolverModel(status)
-        return status 
-
-
-    def __removeVariablesAndProperties(self):
-        """
-        Remove variables and properties associated to current model.
-        """
-
+        QWidget.__init__(self)
+        Ui_UserSolverPredefVarForm.__init__(self)
+        self.setupUi(self)
 
 #-------------------------------------------------------------------------------
 # End

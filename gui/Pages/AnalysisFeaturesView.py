@@ -171,10 +171,10 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
                               'merkle_model')
 
         # UserSolver
-        self.modelUserSolver.addItem(self.tr("Diffusion of a scalar"),
-                                     "scalar_diffusion")
-        self.modelUserSolver.addItem(self.tr("Convection of a scalar"),
-                                     "scalar_convection")
+        self.modelUserSolver.addItem(self.tr("Define custom equations through user routines"),
+                                     "custom_solver")
+        self.modelUserSolver.addItem(self.tr("Use predefined operators (CDO only)"),
+                                     "predef_solver")
 
         # NeptuneCFD
         self.modelNeptuneCFD.addItem(self.tr("User-defined"), "None")
@@ -414,6 +414,13 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
 
         elif usolver != "off":
             self.modelUserSolver.setItem(str_model=usolver)
+            self.labelLagrangian.hide()
+            self.comboBoxLagrangian.hide()
+            self.labelTurboMachinery.hide()
+            self.comboBoxTurboMachinery.hide()
+            self.checkBoxALE.hide()
+            self.checkBoxFans.hide()
+ 
 
         else:
             self.modelSinglePhase.setItem(str_model=compressible)
@@ -847,6 +854,13 @@ class AnalysisFeaturesView(QWidget, Ui_AnalysisFeaturesForm):
 
         model = self.__stringModelFromCombo('UserSolver')
         self.usol.setUserSolverModel(model)
+
+        self.labelLagrangian.hide()
+        self.comboBoxLagrangian.hide()
+        self.labelTurboMachinery.hide()
+        self.comboBoxTurboMachinery.hide()
+        self.checkBoxALE.hide()
+        self.checkBoxFans.hide()
 
         self.browser.configureTree(self.case)
 
