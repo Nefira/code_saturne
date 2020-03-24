@@ -307,7 +307,7 @@ def displaySelectedPage(page_name, root, case, stbar=None, tree=None):
 
     elif page_name == tr("Define custom solver"):
         import code_saturne.Pages.UserSolverCustomView as Page
-        thisPage = Page.UserSolverCustomView()
+        thisPage = Page.UserSolverCustomView(root, case, stbar, tree)
 
     elif page_name == tr("Define solver variables"):
         import code_saturne.Pages.UserSolverPredefVarView as Page
@@ -315,7 +315,7 @@ def displaySelectedPage(page_name, root, case, stbar=None, tree=None):
 
     elif page_name == tr("Define solver properties"):
         import code_saturne.Pages.UserSolverPredefPropView as Page
-        thisPage = Page.UserSolverPredefPropView()
+        thisPage = Page.UserSolverPredefPropView(root, case)
 
     else:
         msg = tr("Warning: the corresponding Page %s doesn't exist!") % page_name

@@ -122,6 +122,7 @@ UsersControlView.py \
 UserSolverCustomView.py \
 UserSolverPredefPropView.py \
 UserSolverPredefVarView.py \
+SolverPropertyView.py \
 OutputFieldsView.py \
 OpenTurnsDialogView.py \
 SolidView.py \
@@ -206,6 +207,7 @@ TurbulenceNeptune.ui \
 UserSolverCustomForm.ui \
 UserSolverPredefPropForm.ui \
 UserSolverPredefVarForm.ui \
+SolverPropertyForm.ui \
 VerifyExistenceLabelDialogForm.ui \
 VolumicZoneAdvancedDialogForm.ui \
 WelcomeForm.ui \
